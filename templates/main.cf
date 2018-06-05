@@ -52,9 +52,9 @@ smtpd_use_tls = yes
 # TLS certificate. Must be in PEM format. Can be world-readable
 # If cert contains intermediate CA certs, they must be placed after server
 # cert.
-smtpd_tls_cert_file = /etc/letsencrypt/live/{{ mail_hostname }}/fullchain.pem
+smtpd_tls_cert_file = /etc/ssl_certs/{{ mail_hostname }}/fullchain.pem
 # TLS private key. Must be in PEM format too. Should be root:root rw-------
-smtpd_tls_key_file = /etc/letsencrypt/live/{{ mail_hostname }}/privkey.pem
+smtpd_tls_key_file = /etc/ssl_certs/{{ mail_hostname }}/private.pem
 {% endif %}
 # TLS encryption may means it not required
 # smtP_tls* is for postfix-MTA. It means that this postfix will try to encrypt
