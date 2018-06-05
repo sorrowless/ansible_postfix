@@ -1,0 +1,46 @@
+---
+- name: Install Postfix MTA
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ postfix_packages }}"
+
+- name: Install postgrey
+  package:
+    name: postgrey
+    state: latest
+  when: check_policy['enabled'] == true
+
+- name: Copy postfix configuration files
+  template:
+    src: "{{ item }}"
+    dest: "/etc/postfix/{{ item }}"
+  with_items:
+    - master.cf
+    - main.cf
+    - virtual_domains.cf
+    - virtual_mailboxes.cf
+    - virtual_aliases.cf
+  notify:
+    - Restart Postfix
+
+      #- name: Config SASL for authentication
+      #  template:
+      #    src: sasl/smtpd.conf
+      #    dest: "/etc/postfix/sasl/smtpd.conf"
+      #    owner: root
+      #    mode: 0755
+
+- name: Create group for managing mailboxes
+  group:
+    name: vmail
+    gid: 5000
+
+- name: Create user for managing mailboxes
+  user:
+    name: vmail
+    uid: 5000
+    group: vmail
+    shell: '/bin/false'
+
+- include: postfixadmin.yml

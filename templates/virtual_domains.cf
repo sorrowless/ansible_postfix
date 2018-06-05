@@ -1,0 +1,7 @@
+user = {{ postfix_db_user }}
+password = {{ postfix_db_password }}
+hosts = {{ postfix_db_host }}
+dbname = {{ postfix_db_name }}
+table = domain
+select_field = domain
+where_field = domain

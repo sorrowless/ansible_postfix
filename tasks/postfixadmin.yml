@@ -1,0 +1,93 @@
+---
+- name: Install postfixadmin
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - postfixadmin
+    - php-mbstring
+    - php-fpm
+
+- name: Create hashed password for superuser
+  shell: "echo '{{ postfixadmin_superpass }}' | openssl passwd -1 -stdin"
+  register: hashed_superpass
+
+- name: Copy DB schema
+  template:
+    src: sql/01_postfixdb.sql
+    dest: /tmp/01_postfixdb.sql
+
+- name: Import DB schema
+  mysql_db:
+    name: "{{ postfix_db_name }}"
+    state: import
+    target: /tmp/01_postfixdb.sql
+
+- name: Use proper mysql connection type for postfixadmin
+  lineinfile:
+    path: /etc/postfixadmin/dbconfig.inc.php
+    regexp: '.*dbtype=.*'
+    line: "$dbtype='mysqli';"
+
+- name: Use proper db password for postfixadmin
+  lineinfile:
+    path: /etc/postfixadmin/dbconfig.inc.php
+    regexp: '.*dbpass=.*'
+    line: "$dbpass='{{ postfixadmin_db_password }}';"
+
+- name: Use proper db name for postfixadmin
+  lineinfile:
+    path: /etc/postfixadmin/dbconfig.inc.php
+    regexp: '.*dbname=.*'
+    line: "$dbname='{{ postfix_db_name }}';"
+
+- name: Use proper setup password postfixadmin
+  lineinfile:
+    path: /etc/postfixadmin/config.inc.php
+    regexp: '.*setup_password.*'
+    line: "$CONF['setup_password'] = '';"
+
+- name: Disable domain name checking
+  lineinfile:
+    path: /etc/postfixadmin/config.inc.php
+    regexp: '.*emailcheck_resolve_domain.*'
+    line: "$CONF['emailcheck_resolve_domain']='NO';"
+
+- name: Disable prefix creation
+  lineinfile:
+    path: /etc/postfixadmin/config.inc.php
+    regexp: '.*create_mailbox_subdirs_prefix.*'
+    line: "$CONF['create_mailbox_subdirs_prefix']='';"
+
+- name: Remove apache2 installation
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - apache2
+    - lighttpd
+
+- name: Install nginx
+  package:
+    name: nginx
+    state: latest
+
+- name: Generate strong DH parameters for Nginx
+  command: openssl dhparam -out /etc/nginx/dhparam.pem 2048
+  args:
+    creates: /etc/nginx/dhparam.pem
+
+- name: Copy postfixadmin nginx configuration
+  template:
+    src: nginx/mail.postfixadmin.conf
+    dest: /etc/nginx/sites-available/mail.postfixadmin.conf
+  notify:
+    - Restart Nginx
+
+- name: Enable nginx postfixadmin configuration
+  file:
+    src: /etc/nginx/sites-available/mail.postfixadmin.conf
+    dest: /etc/nginx/sites-enabled/mail.postfixadmin.conf
+    state: link
+  notify:
+    - Restart Nginx
