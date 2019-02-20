@@ -2,14 +2,14 @@
 - name: Install Postfix MTA
   package:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items: "{{ postfix_packages }}"
 
 - name: Install postgrey
   package:
     name: postgrey
-    state: latest
-  when: check_policy['enabled'] == true
+    state: present
+  when: check_policy['enabled']
 
 - name: Copy postfix configuration files
   template:

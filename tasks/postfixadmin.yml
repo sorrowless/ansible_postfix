@@ -2,7 +2,7 @@
 - name: Install postfixadmin
   package:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items:
     - postfixadmin
     - php-mbstring
@@ -70,7 +70,7 @@
 - name: Install nginx
   package:
     name: nginx
-    state: latest
+    state: present
 
 - name: Generate strong DH parameters for Nginx
   command: openssl dhparam -out /etc/nginx/dhparam.pem 2048
