@@ -14,7 +14,9 @@ mydestination =
 #virtual_transport = lmtp:unix:/var/lib/imap/socket/lmtp
 virtual_transport = dovecot
 # Aliases for which we can forward emails
-virtual_alias_maps = mysql:/etc/postfix/virtual_aliases.cf
+virtual_alias_maps =
+  mysql:/etc/postfix/virtual_aliases.cf,
+  mysql:/etc/postfix/virtual_aliases_regex.cf
 # There are real domains for which we will accept emails
 virtual_mailbox_domains = mysql:/etc/postfix/virtual_domains.cf
 # And there are users of these domains which are stored in MySQL

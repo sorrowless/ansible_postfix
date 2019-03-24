@@ -4,6 +4,10 @@
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
 smtp      inet  n       -       n       -       -       smtpd
+# Allow for TLS on 465 port (SSL). It is deprecated long time ago but allowed
+# for clients who implements smtps and want to use it instead STARTTLS on port
+# 587.
+smtps     inet  n       -       n       -       -       smtpd
 {% if spamassassin['enabled'] %}
   -o content_filter=spamfilter:dummy
 {% endif %}

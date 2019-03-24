@@ -1,0 +1,5 @@
+user = {{ postfix_db_user }}
+password = {{ postfix_db_password }}
+hosts = {{ postfix_db_host }}
+dbname = {{ postfix_db_name }}
+query = SELECT goto FROM alias WHERE '%s' REGEXP CONCAT('^',address,'$') AND SUBSTRING(address,1,1) != '@' AND active = '1'
