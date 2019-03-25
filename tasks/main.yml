@@ -21,6 +21,7 @@
     - virtual_domains.cf
     - virtual_mailboxes.cf
     - virtual_aliases.cf
+    - virtual_aliases_regex.cf
   notify:
     - Restart Postfix
 
