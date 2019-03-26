@@ -12,16 +12,22 @@
   shell: "echo '{{ postfixadmin_superpass }}' | openssl passwd -1 -stdin"
   register: hashed_superpass
 
+- name: Check if database exists
+  shell: "mysql -e 'show databases;' | egrep '\bpostfix\b'"
+  register: dbstatus
+
 - name: Copy DB schema
   template:
     src: sql/01_postfixdb.sql
     dest: /tmp/01_postfixdb.sql
+  when: dbstatus.rc != 0
 
 - name: Import DB schema
   mysql_db:
     name: "{{ postfix_db_name }}"
     state: import
     target: /tmp/01_postfixdb.sql
+  when: dbstatus.rc != 0
 
 - name: Use proper mysql connection type for postfixadmin
   lineinfile:
