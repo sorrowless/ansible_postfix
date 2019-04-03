@@ -44,4 +44,5 @@
     group: vmail
     shell: '/bin/false'
 
-- include: postfixadmin.yml
+- import_tasks: postfixadmin.yml
+  tags: postfixadmin
