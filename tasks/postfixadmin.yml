@@ -8,12 +8,21 @@
     - php-mbstring
     - php-fpm
 
+- name: Ensure root mysql client credentials
+  template:
+    src: my.cnf
+    dest: /root/.my.cnf
+
 - name: Create hashed password for superuser
   shell: "echo '{{ postfixadmin_superpass }}' | openssl passwd -1 -stdin"
   register: hashed_superpass
 
 - name: Check if database exists
-  shell: "mysql -e 'show databases;' | egrep '\bpostfix\b'"
+  shell:
+    cmd:
+      mysql -e 'show databases;' | egrep '\bpostfix\b'
+  become: yes
+  become_user: root
   register: dbstatus
 
 - name: Copy DB schema
