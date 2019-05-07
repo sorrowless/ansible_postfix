@@ -47,3 +47,5 @@ mysql_db:
 postfixadmin_db_password: pfxadmpass
 postfixadmin_superuser: admin
 postfixadmin_superpass: adminpassword
+# List of domains to which we're automatically trust
+trusted_sender_domains: []

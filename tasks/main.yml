@@ -25,12 +25,19 @@
   notify:
     - Restart Postfix
 
-      #- name: Config SASL for authentication
-      #  template:
-      #    src: sasl/smtpd.conf
-      #    dest: "/etc/postfix/sasl/smtpd.conf"
-      #    owner: root
-      #    mode: 0755
+- name: Copy postfix explicitly trusted sender domains
+  template:
+    src: "{{ item }}"
+    dest: "/etc/postfix/{{ item }}"
+  with_items:
+    - sender_permits
+  notify:
+    - Restart Postfix
+  register: sender_domains
+
+- name: Ensure hash db for explicitly trusted sender domains
+  command: postmap /etc/postfix/sender_permits
+  when: sender_domains.changed
 
 - name: Create group for managing mailboxes
   group:

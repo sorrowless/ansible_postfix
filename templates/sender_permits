@@ -1,0 +1,3 @@
+{% for domain in trusted_sender_domains %}
+{{ domain }}  permit
+{% endfor %}
