@@ -141,9 +141,9 @@ smtpd_sender_restrictions =
   permit_sasl_authenticated,
   hash:/etc/postfix/sender_permits,
   reject_non_fqdn_sender,
-ct the request when Postfix is not final destination for the sender address, and the MAIL FROM domain has 1) no DNS MX and no DNS A record, or 2) a malformed MX record
+# Reject the request when Postfix is not final destination for the sender address, and the MAIL FROM domain has 1) no DNS MX and no DNS A record, or 2) a malformed MX record
   reject_unknown_sender_domain,
-ct the request when mail to the MAIL FROM address is known to bounce, or when the sender address destination is not reachable. Disabled cause there are bunch of mail systems who sends emails from bounce addresses to avoid spamming on them.
+# Reject the request when mail to the MAIL FROM address is known to bounce, or when the sender address destination is not reachable. Disabled cause there are bunch of mail systems who sends emails from bounce addresses to avoid spamming on them.
 # reject_unverified_sender,
 # Explicitly permit all other
   permit
