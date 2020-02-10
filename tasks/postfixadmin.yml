@@ -8,11 +8,6 @@
     - php-mbstring
     - php-fpm
 
-- name: Ensure root mysql client credentials
-  template:
-    src: my.cnf
-    dest: /root/.my.cnf
-
 - name: Create hashed password for superuser
   shell: "echo '{{ postfixadmin_superpass }}' | openssl passwd -1 -stdin"
   register: hashed_superpass
@@ -20,9 +15,10 @@
 - name: Check if database exists
   shell:
     cmd:
-      mysql -e 'show databases;' | egrep '\bpostfix\b'
+      mysql -e 'select count(*) from postfix.admin;'
   become: yes
   become_user: root
+  failed_when: False
   register: dbstatus
 
 - name: Copy DB schema
@@ -36,6 +32,7 @@
     name: "{{ postfix_db_name }}"
     state: import
     target: /tmp/01_postfixdb.sql
+    login_unix_socket: /run/mysqld/mysqld.sock
   when: dbstatus.rc != 0
 
 - name: Use proper mysql connection type for postfixadmin
@@ -81,28 +78,3 @@
   with_items:
     - apache2
     - lighttpd
-
-- name: Install nginx
-  package:
-    name: nginx
-    state: present
-
-- name: Generate strong DH parameters for Nginx
-  command: openssl dhparam -out /etc/nginx/dhparam.pem 2048
-  args:
-    creates: /etc/nginx/dhparam.pem
-
-- name: Copy postfixadmin nginx configuration
-  template:
-    src: nginx/mail.postfixadmin.conf
-    dest: /etc/nginx/sites-available/mail.postfixadmin.conf
-  notify:
-    - Restart Nginx
-
-- name: Enable nginx postfixadmin configuration
-  file:
-    src: /etc/nginx/sites-available/mail.postfixadmin.conf
-    dest: /etc/nginx/sites-enabled/mail.postfixadmin.conf
-    state: link
-  notify:
-    - Restart Nginx

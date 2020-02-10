@@ -9,7 +9,7 @@
   package:
     name: postgrey
     state: present
-  when: check_policy['enabled']
+  when: check_policy.enabled
 
 - name: Copy postfix configuration files
   template:

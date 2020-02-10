@@ -62,9 +62,9 @@ smtpd_tls_key_file = /etc/ssl_certs/{{ mail_hostname }}/private.pem
 # smtP_tls* is for postfix-MTA. It means that this postfix will try to encrypt
 # a connection to the server it will send an email
 smtp_tls_security_level = may
-smtp_tls_mandatory_protocols = TLSv1.1, TLSv1.2
+smtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 # Modern set from Mozilla Foundation
-smtp_tls_mandatory_ciphers = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+smtp_tls_mandatory_ciphers = medium
 # smtpD_tls* is for MTA-postfix. It means our client can try to encrypt a
 # connection to this postfix to send an email to it.
 smtpd_tls_security_level = may
@@ -81,9 +81,12 @@ smtpd_tls_security_level = may
 # you will set '-o smtpd_tls_security_level=encrypt' to 'submission' service,
 # then all the clients who try to connect to the port 587 now *must* use TLS
 # to use that port at all.
-smtpd_tls_mandatory_protocols = TLSv1.1, TLSv1.2
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 # Modern set from Mozilla Foundation
-smtpd_tls_mandatory_ciphers = ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+smtpd_tls_mandatory_ciphers = medium
+
+tls_medium_cipherlist = ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+tls_preempt_cipherlist = no
 
 
 # So, for now we have accept only TLS connections on 587
